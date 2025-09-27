@@ -219,3 +219,122 @@ table tr:hover {
     padding: 6px;
   }
 }
+/* ===== Role Selector Buttons ===== */
+.role-select-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+.role-select-btn:hover {
+  background: #1d4ed8;
+}
+/* ===== Role Selector Buttons ===== */
+.role-select-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+.role-select-btn:hover {
+  background: #1d4ed8;
+}
+
+/* ===== Welcome Section ===== */
+.welcome-section {
+  background: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-section h2 {
+  color: #1e293b;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.welcome-section p {
+  color: #64748b;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* ===== Dashboard Sections ===== */
+.dashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.dashboard-student {
+  grid-template-columns: 1fr;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dashboard-faculty {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.dashboard-admin {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.dashboard-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-top: 3px solid #e2e8f0;
+}
+
+.dashboard-student .dashboard-section {
+  border-top-color: #16a34a;
+}
+
+.dashboard-faculty .dashboard-section {
+  border-top-color: #2563eb;
+}
+
+.dashboard-admin .dashboard-section {
+  border-top-color: #dc2626;
+}
+
+.dashboard-section h3 {
+  color: #1e293b;
+  font-size: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .dashboard-faculty,
+  .dashboard-admin {
+    grid-template-columns: 1fr;
+  }
+  
+  .welcome-section {
+    margin: 16px 0;
+    padding: 16px;
+  }
+  
+  .dashboard-section {
+    padding: 16px;
+  }
+}

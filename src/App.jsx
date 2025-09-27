@@ -10,8 +10,9 @@ function App() {
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authMode, setAuthMode] = useState('signin'); // signin / signup
+  const [authMode, setAuthMode] = useState('signin');
   const [form, setForm] = useState({ email: '', password: '', role: 'student' });
+  const [showRoleSelector, setShowRoleSelector] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -45,7 +46,30 @@ function App() {
 
     if (!error && data) {
       setUserRole(data.role);
+      setShowRoleSelector(false);
+    } else {
+      setShowRoleSelector(true);
     }
+  };
+
+  const setUserRoleInDB = async (role) => {
+    if (!session?.user) return;
+    
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: session.user.id,
+        email: session.user.email,
+        role: role,
+      });
+
+    if (error) {
+      alert('Error setting role: ' + error.message);
+      return;
+    }
+
+    setUserRole(role);
+    setShowRoleSelector(false);
   };
 
   const handleAuth = async (e) => {
@@ -63,8 +87,7 @@ function App() {
       }
 
       if (data?.user) {
-        // Insert into profiles
-        await supabase.from('profiles').insert({
+        await supabase.from('profiles').upsert({
           id: data.user.id,
           email: form.email,
           role: form.role,
@@ -92,6 +115,37 @@ function App() {
     await supabase.auth.signOut();
     setSession(null);
     setUserRole(null);
+    setShowRoleSelector(false);
+  };
+
+  // Function to get welcome message based on role
+  const getWelcomeMessage = () => {
+    switch(userRole) {
+      case 'student':
+        return {
+          title: 'Student Portal',
+          message: 'View your academic records, marks, and attendance',
+          color: '#16a34a' // green
+        };
+      case 'faculty':
+        return {
+          title: 'Faculty Dashboard',
+          message: 'Manage student marks and attendance records',
+          color: '#2563eb' // blue
+        };
+      case 'admin':
+        return {
+          title: 'Admin Panel',
+          message: 'Full system access - manage students, subjects, and data',
+          color: '#dc2626' // red
+        };
+      default:
+        return {
+          title: 'Welcome',
+          message: 'Loading your dashboard...',
+          color: '#6b7280' // gray
+        };
+    }
   };
 
   if (loading) return <p className="loading">Loading...</p>;
@@ -149,23 +203,113 @@ function App() {
     );
   }
 
+  if (showRoleSelector) {
+    return (
+      <div className="auth-container">
+        <h2>Select Your Role</h2>
+        <p>Please select your role to continue:</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+          <button onClick={() => setUserRoleInDB('student')} className="role-select-btn">
+            I am a Student
+          </button>
+          <button onClick={() => setUserRoleInDB('faculty')} className="role-select-btn">
+            I am a Faculty Member
+          </button>
+          <button onClick={() => setUserRoleInDB('admin')} className="role-select-btn">
+            I am an Admin
+          </button>
+        </div>
+        <button onClick={signOut} style={{ marginTop: '20px', background: '#ef4444' }}>
+          Sign Out
+        </button>
+      </div>
+    );
+  }
+
+  const welcomeInfo = getWelcomeMessage();
+
   return (
     <div className="app-container">
       <header>
         <h1>VIT College Student DBMS</h1>
         <div>
-          <span className="role-badge">Role: {userRole}</span>
+          <span className="role-badge" style={{ background: welcomeInfo.color }}>
+            {userRole?.toUpperCase()}
+          </span>
           <button onClick={signOut} className="logout-btn">
             Sign Out
           </button>
         </div>
       </header>
 
-      <main>
-        <Students userRole={userRole} />
-        <Subjects userRole={userRole} />
-        <Marks userRole={userRole} />
-        <Attendance userRole={userRole} />
+      {/* Welcome Section */}
+      <div className="welcome-section" style={{ borderLeft: `4px solid ${welcomeInfo.color}` }}>
+        <h2>{welcomeInfo.title}</h2>
+        <p>{welcomeInfo.message}</p>
+      </div>
+
+      <main className={`dashboard dashboard-${userRole}`}>
+        {/* STUDENT INTERFACE */}
+        {userRole === 'student' && (
+          <>
+            <div className="dashboard-section">
+              <h3>📊 My Academic Records</h3>
+              <Students userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📝 My Marks</h3>
+              <Marks userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📅 My Attendance</h3>
+              <Attendance userRole={userRole} />
+            </div>
+          </>
+        )}
+        
+        {/* FACULTY INTERFACE */}
+        {userRole === 'faculty' && (
+          <>
+            <div className="dashboard-section">
+              <h3>👥 Students Overview</h3>
+              <Students userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📚 Subjects</h3>
+              <Subjects userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>✏️ Manage Marks</h3>
+              <Marks userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📋 Manage Attendance</h3>
+              <Attendance userRole={userRole} />
+            </div>
+          </>
+        )}
+        
+        {/* ADMIN INTERFACE */}
+        {userRole === 'admin' && (
+          <>
+            <div className="dashboard-section">
+              <h3>👤 Student Management</h3>
+              <Students userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📚 Subject Management</h3>
+              <Subjects userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📊 Marks Overview</h3>
+              <Marks userRole={userRole} />
+            </div>
+            <div className="dashboard-section">
+              <h3>📈 Attendance Overview</h3>
+              <Attendance userRole={userRole} />
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
