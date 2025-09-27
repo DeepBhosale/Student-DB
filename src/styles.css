@@ -1,0 +1,8 @@
+body{ font-family: Inter, system-ui, Arial, sans-serif; padding: 20px; background: #f7f7f8 }
+.header{ display:flex; justify-content:space-between; align-items:center }
+nav button{ margin-right:8px }
+.card{ display:flex; gap:8px; flex-wrap:wrap; padding:12px; background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:12px }
+.card input, .card select{ padding:8px; border-radius:6px; border:1px solid #ddd }
+.table{ width:100%; border-collapse:collapse; background:#fff }
+.table th, .table td{ padding:8px; border-bottom:1px solid #eee; text-align:left }
+button{ padding:6px 10px; border-radius:6px; border:1px solid #ccc; background:#fff; cursor:pointer }
