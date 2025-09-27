@@ -1,23 +1,23 @@
 import React, { useState } from 'react'
 import Students from './components/Students'
-import Subjects from './components/Subjects'   // ✅ this line is required
+import Subjects from './components/Subjects'
 import Marks from './components/Marks'
 import Attendance from './components/Attendance'
 import './styles.css'
 
-
-export default function App(){
+export default function App() {
   const [page, setPage] = useState('students')
+
   return (
-    <div className="app">
-      <header className="header">
-        <h1>Student DBMS — Simple</h1>
+    <div className="app-container">
+      <header>
+        <h1>VIT College Student Portal</h1>
         <nav>
-            <button onClick={() => setPage('students')}>Students</button>
-            <button onClick={() => setPage('subjects')}>Subjects</button>
-            <button onClick={() => setPage('marks')}>Marks</button>      
-            <button onClick={() => setPage('attendance')}>Attendance</button> 
-       </nav>
+          <button className={page==='students'?'active':''} onClick={() => setPage('students')}>Students</button>
+          <button className={page==='subjects'?'active':''} onClick={() => setPage('subjects')}>Subjects</button>
+          <button className={page==='marks'?'active':''} onClick={() => setPage('marks')}>Marks</button>
+          <button className={page==='attendance'?'active':''} onClick={() => setPage('attendance')}>Attendance</button>
+        </nav>
       </header>
 
       <main>
@@ -27,8 +27,8 @@ export default function App(){
         {page === 'attendance' && <Attendance />}
       </main>
 
-      <footer style={{ marginTop: 24, textAlign: 'center' }}>
-        <small>Supabase + React — demo</small>
+      <footer>
+        &copy; {new Date().getFullYear()} VIT College | All rights reserved
       </footer>
     </div>
   )
