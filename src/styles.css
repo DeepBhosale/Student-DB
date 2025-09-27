@@ -338,3 +338,54 @@ table tr:hover {
     padding: 16px;
   }
 }
+/* ===== Student Profile Card ===== */
+.student-profile-card {
+  background: white;
+  border: 2px solid #16a34a;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.1);
+}
+
+.student-profile-card h3 {
+  color: #16a34a;
+  margin-bottom: 20px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.profile-info {
+  display: grid;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-row strong {
+  color: #1e293b;
+  min-width: 120px;
+}
+
+.no-profile-card {
+  background: white;
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.no-profile-card h3 {
+  color: #f59e0b;
+  margin-bottom: 12px;
+}
+
+.no-profile-card p {
+  color: #6b7280;
+  margin-bottom: 8px;
+}
