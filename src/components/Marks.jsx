@@ -134,14 +134,13 @@ export default function Marks({ userRole }) {
 
       {/* ADD MARKS FORM - For Faculty and Admin */}
       {(userRole === 'faculty' || userRole === 'admin') && (
-        <div style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '2px solid #e2e8f0' }}>
-          <h4 style={{ marginBottom: '20px', color: '#1e40af' }}>➕ Add Student Marks</h4>
-          <form onSubmit={addMarks} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px' }}>
+        <div className="form-section">
+          <h4>➕ Add Student Marks</h4>
+          <form onSubmit={addMarks}>
             <select 
               value={form.student_id} 
               onChange={e => setForm({ ...form, student_id: e.target.value })}
               required
-              style={{ padding: '8px' }}
             >
               <option value="">-- Select Student --</option>
               {students.map(s => (
@@ -155,7 +154,6 @@ export default function Marks({ userRole }) {
               value={form.subject_id} 
               onChange={e => setForm({ ...form, subject_id: e.target.value })}
               required
-              style={{ padding: '8px' }}
             >
               <option value="">-- Select Subject --</option>
               {subjects.map(s => (
@@ -193,7 +191,7 @@ export default function Marks({ userRole }) {
               required
             />
 
-            <button type="submit" style={{ background: '#16a34a', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button type="submit" className="btn-success">
               Add Marks
             </button>
           </form>
@@ -201,32 +199,32 @@ export default function Marks({ userRole }) {
       )}
 
       {/* MARKS LIST */}
-      <div style={{ background: 'white', padding: '20px', borderRadius: '12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="dashboard-section">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
           <h3>Student Marks ({marksList.length})</h3>
-          <button onClick={fetchMarks} style={{ background: '#2563eb', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
+          <button onClick={fetchMarks} className="btn-primary">
             🔄 Refresh
           </button>
         </div>
 
         {loading ? (
-          <p>Loading marks...</p>
+          <div className="loading">Loading marks...</div>
         ) : marksList.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+          <div className="empty-state">
             <p>No marks records found.</p>
             {(userRole === 'faculty' || userRole === 'admin') && <p>Use the form above to add the first marks record.</p>}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ minWidth: '900px' }}>
+          <div className="table-container">
+            <table>
               <thead>
                 <tr>
                   <th>Student</th>
                   <th>Subject</th>
-                  <th>Semester</th>
+                  <th>Sem</th>
                   <th>Marks</th>
-                  <th>Percentage</th>
-                  <th>Date Added</th>
+                  <th>%</th>
+                  <th>Date</th>
                   {(userRole === 'faculty' || userRole === 'admin') && <th>Actions</th>}
                 </tr>
               </thead>
@@ -279,15 +277,15 @@ function MarkRow({ m, students, subjects, userRole, onUpdate, onDelete }) {
       <td>{subjectLabel(m.subject_id)}</td>
       <td>
         {editing ? 
-          <input type="number" min="1" max="8" value={local.semester} onChange={e => setLocal({ ...local, semester: Number(e.target.value) })} style={{ width: '60px' }} /> 
+          <input type="number" min="1" max="8" value={local.semester} onChange={e => setLocal({ ...local, semester: Number(e.target.value) })} style={{ width: '50px', fontSize: '12px', padding: '4px' }} /> 
           : m.semester}
       </td>
       <td>
         {editing ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <input type="number" min="0" value={local.marks} onChange={e => setLocal({ ...local, marks: Number(e.target.value) })} style={{ width: '60px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <input type="number" min="0" value={local.marks} onChange={e => setLocal({ ...local, marks: Number(e.target.value) })} style={{ width: '40px', fontSize: '12px', padding: '2px' }} />
             <span>/</span>
-            <input type="number" min="1" value={local.max_marks} onChange={e => setLocal({ ...local, max_marks: Number(e.target.value) })} style={{ width: '60px' }} />
+            <input type="number" min="1" value={local.max_marks} onChange={e => setLocal({ ...local, max_marks: Number(e.target.value) })} style={{ width: '40px', fontSize: '12px', padding: '2px' }} />
           </div>
         ) : (
           <strong>{m.marks}/{m.max_marks}</strong>
@@ -302,39 +300,39 @@ function MarkRow({ m, students, subjects, userRole, onUpdate, onDelete }) {
       {(userRole === 'faculty' || userRole === 'admin') && (
         <td>
           {editing ? (
-            <div style={{ display: 'flex', gap: '5px' }}>
+            <div className="button-group">
               <button 
                 onClick={() => { 
                   onUpdate({ semester: local.semester, marks: local.marks, max_marks: local.max_marks }); 
                   setEditing(false) 
                 }} 
-                style={{ background: '#16a34a', color: 'white', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                className="btn-small btn-success"
               >
-                💾 Save
+                💾
               </button>
               <button 
                 onClick={() => { 
                   setEditing(false); 
                   setLocal({ marks: m.marks, max_marks: m.max_marks, semester: m.semester }) 
                 }} 
-                style={{ background: '#6b7280', color: 'white', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                className="btn-small btn-secondary"
               >
-                ❌ Cancel
+                ❌
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '5px' }}>
+            <div className="button-group">
               <button 
                 onClick={() => setEditing(true)} 
-                style={{ background: '#f59e0b', color: 'white', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                className="btn-small btn-edit"
               >
-                ✏️ Edit
+                ✏️
               </button>
               <button 
                 onClick={onDelete} 
-                style={{ background: '#ef4444', color: 'white', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                className="btn-small btn-delete"
               >
-                🗑️ Delete
+                🗑️
               </button>
             </div>
           )}

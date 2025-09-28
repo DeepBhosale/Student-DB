@@ -101,9 +101,9 @@ export default function Subjects({ userRole }) {
       
       {/* ADD SUBJECT FORM - Only for Admin */}
       {userRole === 'admin' && (
-        <div style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '2px solid #e2e8f0' }}>
-          <h4 style={{ marginBottom: '20px', color: '#1e40af' }}>➕ Add New Subject</h4>
-          <form onSubmit={addSubject} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="form-section">
+          <h4>➕ Add New Subject</h4>
+          <form onSubmit={addSubject}>
             <input 
               placeholder="Subject Code (e.g., CS101)" 
               required 
@@ -124,7 +124,7 @@ export default function Subjects({ userRole }) {
               value={form.credits} 
               onChange={e => setForm({ ...form, credits: Number(e.target.value) })} 
             />
-            <button type="submit" style={{ background: '#16a34a', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button type="submit" className="btn-success">
               Add Subject
             </button>
           </form>
@@ -132,24 +132,24 @@ export default function Subjects({ userRole }) {
       )}
 
       {/* SUBJECTS LIST */}
-      <div style={{ background: 'white', padding: '20px', borderRadius: '12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="dashboard-section">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
           <h3>All Subjects ({subjects.length})</h3>
-          <button onClick={fetchSubjects} style={{ background: '#2563eb', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
+          <button onClick={fetchSubjects} className="btn-primary">
             🔄 Refresh
           </button>
         </div>
 
         {loading ? (
-          <p>Loading subjects...</p>
+          <div className="loading">Loading subjects...</div>
         ) : subjects.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+          <div className="empty-state">
             <p>No subjects found.</p>
             {userRole === 'admin' && <p>Use the form above to add the first subject.</p>}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ minWidth: '600px' }}>
+          <div className="table-container">
+            <table>
               <thead>
                 <tr>
                   <th>Code</th>
@@ -166,18 +166,20 @@ export default function Subjects({ userRole }) {
                     <td>{s.credits}</td>
                     {userRole === 'admin' && (
                       <td>
-                        <button 
-                          onClick={() => startEdit(s)} 
-                          style={{ background: '#f59e0b', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', marginRight: '8px', fontSize: '12px' }}
-                        >
-                          ✏️ Edit
-                        </button>
-                        <button 
-                          onClick={() => deleteSubject(s.id)} 
-                          style={{ background: '#ef4444', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-                        >
-                          🗑️ Delete
-                        </button>
+                        <div className="button-group">
+                          <button 
+                            onClick={() => startEdit(s)} 
+                            className="btn-small btn-edit"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button 
+                            onClick={() => deleteSubject(s.id)} 
+                            className="btn-small btn-delete"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -190,21 +192,10 @@ export default function Subjects({ userRole }) {
 
       {/* EDIT SUBJECT MODAL */}
       {editingId && (
-        <div style={{ 
-          position: 'fixed', 
-          top: '0', 
-          left: '0', 
-          right: '0', 
-          bottom: '0', 
-          background: 'rgba(0,0,0,0.5)', 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          zIndex: 1000 
-        }}>
-          <div style={{ background: 'white', padding: '30px', borderRadius: '12px', maxWidth: '400px', width: '90%' }}>
-            <h3 style={{ marginBottom: '20px', color: '#1e40af' }}>Edit Subject</h3>
-            <form onSubmit={saveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Edit Subject</h3>
+            <form onSubmit={saveEdit}>
               <input 
                 placeholder="Subject Code" 
                 required 
@@ -225,14 +216,14 @@ export default function Subjects({ userRole }) {
                 value={editForm.credits || 3} 
                 onChange={e => setEditForm({ ...editForm, credits: Number(e.target.value) })} 
               />
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button type="submit" style={{ background: '#16a34a', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+              <div className="button-group">
+                <button type="submit" className="btn-success">
                   💾 Save Changes
                 </button>
                 <button 
                   type="button" 
                   onClick={cancelEdit} 
-                  style={{ background: '#6b7280', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                  className="btn-secondary"
                 >
                   ❌ Cancel
                 </button>

@@ -13,6 +13,7 @@ function App() {
   const [authMode, setAuthMode] = useState('signin');
   const [form, setForm] = useState({ email: '', password: '', role: 'student' });
   const [showRoleSelector, setShowRoleSelector] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard'); // New state for active tab
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -116,39 +117,95 @@ function App() {
     setSession(null);
     setUserRole(null);
     setShowRoleSelector(false);
+    setActiveTab('dashboard'); // Reset to dashboard on logout
   };
 
   // Function to get welcome message based on role
-  const getWelcomeMessage = () => {
+  const getWelcomeInfo = () => {
     switch(userRole) {
       case 'student':
         return {
           title: 'Student Portal',
           message: 'View your academic records, marks, and attendance',
-          color: '#16a34a' // green
+          color: '#16a34a'
         };
       case 'faculty':
         return {
           title: 'Faculty Dashboard',
           message: 'Manage student marks and attendance records',
-          color: '#2563eb' // blue
+          color: '#2563eb'
         };
       case 'admin':
         return {
           title: 'Admin Panel',
           message: 'Full system access - manage students, subjects, and data',
-          color: '#dc2626' // red
+          color: '#dc2626'
         };
       default:
         return {
           title: 'Welcome',
           message: 'Loading your dashboard...',
-          color: '#6b7280' // gray
+          color: '#6b7280'
         };
     }
   };
 
-  if (loading) return <p className="loading">Loading...</p>;
+  // Get available tabs based on user role
+  const getAvailableTabs = () => {
+    const baseTabs = [
+      { id: 'dashboard', label: '🏠 Dashboard', icon: '🏠' }
+    ];
+
+    if (userRole === 'student') {
+      return [
+        ...baseTabs,
+        { id: 'students', label: '👥 Students', icon: '👥' },
+        { id: 'marks', label: '📝 My Marks', icon: '📝' },
+        { id: 'attendance', label: '📅 My Attendance', icon: '📅' }
+      ];
+    }
+
+    if (userRole === 'faculty') {
+      return [
+        ...baseTabs,
+        { id: 'students', label: '👥 Students', icon: '👥' },
+        { id: 'subjects', label: '📚 Subjects', icon: '📚' },
+        { id: 'marks', label: '📊 Marks', icon: '📊' },
+        { id: 'attendance', label: '📋 Attendance', icon: '📋' }
+      ];
+    }
+
+    if (userRole === 'admin') {
+      return [
+        ...baseTabs,
+        { id: 'students', label: '👤 Students', icon: '👤' },
+        { id: 'subjects', label: '📚 Subjects', icon: '📚' },
+        { id: 'marks', label: '📊 Marks', icon: '📊' },
+        { id: 'attendance', label: '📈 Attendance', icon: '📈' }
+      ];
+    }
+
+    return baseTabs;
+  };
+
+  // Render active tab content
+  const renderActiveTabContent = () => {
+    switch(activeTab) {
+      case 'students':
+        return <Students userRole={userRole} />;
+      case 'subjects':
+        return <Subjects userRole={userRole} />;
+      case 'marks':
+        return <Marks userRole={userRole} />;
+      case 'attendance':
+        return <Attendance userRole={userRole} />;
+      case 'dashboard':
+      default:
+        return <DashboardHome userRole={userRole} welcomeInfo={getWelcomeInfo()} />;
+    }
+  };
+
+  if (loading) return <div className="loading">Loading...</div>;
 
   if (!session) {
     return (
@@ -226,10 +283,12 @@ function App() {
     );
   }
 
-  const welcomeInfo = getWelcomeMessage();
+  const welcomeInfo = getWelcomeInfo();
+  const availableTabs = getAvailableTabs();
 
   return (
     <div className="app-container">
+      {/* Header */}
       <header>
         <h1>VIT College Student DBMS</h1>
         <div>
@@ -242,75 +301,97 @@ function App() {
         </div>
       </header>
 
+      {/* Navigation Tabs */}
+      <nav className="tab-navigation">
+        {availableTabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+          >
+            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-label">{tab.label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* Active Tab Content */}
+      <main className="tab-content">
+        {renderActiveTabContent()}
+      </main>
+    </div>
+  );
+}
+
+// Dashboard Home Component
+function DashboardHome({ userRole, welcomeInfo }) {
+  return (
+    <div className="dashboard-home">
       {/* Welcome Section */}
       <div className="welcome-section" style={{ borderLeft: `4px solid ${welcomeInfo.color}` }}>
         <h2>{welcomeInfo.title}</h2>
         <p>{welcomeInfo.message}</p>
       </div>
 
-      <main className={`dashboard dashboard-${userRole}`}>
-        {/* STUDENT INTERFACE */}
+      {/* Quick Stats or Information */}
+      <div className="dashboard-cards">
         {userRole === 'student' && (
           <>
-            <div className="dashboard-section">
-              <h3>📊 My Academic Records</h3>
-              <Students userRole={userRole} />
+            <div className="info-card">
+              <h3>📚 Your Studies</h3>
+              <p>Access your academic records, view marks, and track attendance all in one place.</p>
             </div>
-            <div className="dashboard-section">
-              <h3>📝 My Marks</h3>
-              <Marks userRole={userRole} />
+            <div className="info-card">
+              <h3>📊 Performance</h3>
+              <p>Monitor your academic progress and stay updated with your latest marks and grades.</p>
             </div>
-            <div className="dashboard-section">
-              <h3>📅 My Attendance</h3>
-              <Attendance userRole={userRole} />
+            <div className="info-card">
+              <h3>📅 Attendance</h3>
+              <p>Keep track of your class attendance and ensure you meet the minimum requirements.</p>
             </div>
           </>
         )}
-        
-        {/* FACULTY INTERFACE */}
+
         {userRole === 'faculty' && (
           <>
-            <div className="dashboard-section">
-              <h3>👥 Students Overview</h3>
-              <Students userRole={userRole} />
+            <div className="info-card">
+              <h3>👥 Student Management</h3>
+              <p>View and manage student information across all your classes.</p>
             </div>
-            <div className="dashboard-section">
-              <h3>📚 Subjects</h3>
-              <Subjects userRole={userRole} />
+            <div className="info-card">
+              <h3>📝 Grade Management</h3>
+              <p>Enter and update student marks for assessments and examinations.</p>
             </div>
-            <div className="dashboard-section">
-              <h3>✏️ Manage Marks</h3>
-              <Marks userRole={userRole} />
-            </div>
-            <div className="dashboard-section">
-              <h3>📋 Manage Attendance</h3>
-              <Attendance userRole={userRole} />
+            <div className="info-card">
+              <h3>📋 Attendance Tracking</h3>
+              <p>Mark daily attendance and monitor student participation in your courses.</p>
             </div>
           </>
         )}
-        
-        {/* ADMIN INTERFACE */}
+
         {userRole === 'admin' && (
           <>
-            <div className="dashboard-section">
-              <h3>👤 Student Management</h3>
-              <Students userRole={userRole} />
+            <div className="info-card">
+              <h3>🎓 Student Records</h3>
+              <p>Complete control over student database - add, edit, and manage student information.</p>
             </div>
-            <div className="dashboard-section">
-              <h3>📚 Subject Management</h3>
-              <Subjects userRole={userRole} />
+            <div className="info-card">
+              <h3>📚 Course Management</h3>
+              <p>Manage subjects, courses, and academic curriculum across the institution.</p>
             </div>
-            <div className="dashboard-section">
-              <h3>📊 Marks Overview</h3>
-              <Marks userRole={userRole} />
-            </div>
-            <div className="dashboard-section">
-              <h3>📈 Attendance Overview</h3>
-              <Attendance userRole={userRole} />
+            <div className="info-card">
+              <h3>📊 System Overview</h3>
+              <p>Full access to all academic data, reports, and system administration.</p>
             </div>
           </>
         )}
-      </main>
+      </div>
+
+      {/* Quick Navigation */}
+      <div className="quick-nav-section">
+        <h3>Quick Navigation</h3>
+        <p>Use the navigation tabs above to access different sections of the system.</p>
+      </div>
     </div>
   );
 }

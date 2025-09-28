@@ -126,13 +126,13 @@ export default function Students({ userRole }) {
   // STUDENT VIEW - Simple view for students
   if (userRole === 'student') {
     return (
-      <div style={{ padding: '20px', background: 'white', borderRadius: '12px' }}>
+      <div className="dashboard-section">
         <h3>Students in College</h3>
         {loading ? (
-          <p>Loading...</p>
+          <div className="loading">Loading...</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="table">
+          <div className="table-container">
+            <table>
               <thead>
                 <tr>
                   <th>Admission No</th>
@@ -164,9 +164,9 @@ export default function Students({ userRole }) {
       
       {/* ADD STUDENT FORM - Only for Admin */}
       {userRole === 'admin' && (
-        <div style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '2px solid #e2e8f0' }}>
-          <h4 style={{ marginBottom: '20px', color: '#1e40af' }}>➕ Add New Student</h4>
-          <form onSubmit={addStudent} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="form-section">
+          <h4>➕ Add New Student</h4>
+          <form onSubmit={addStudent}>
             <input 
               placeholder="Admission No (e.g., 21BCE001)" 
               required 
@@ -208,7 +208,7 @@ export default function Students({ userRole }) {
               value={form.year} 
               onChange={e => setForm({ ...form, year: Number(e.target.value) })} 
             />
-            <button type="submit" style={{ background: '#16a34a', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button type="submit" className="btn-success">
               Add Student
             </button>
           </form>
@@ -216,24 +216,24 @@ export default function Students({ userRole }) {
       )}
 
       {/* STUDENTS LIST */}
-      <div style={{ background: 'white', padding: '20px', borderRadius: '12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="dashboard-section">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
           <h3>All Students ({students.length})</h3>
-          <button onClick={fetchStudents} style={{ background: '#2563eb', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
+          <button onClick={fetchStudents} className="btn-primary">
             🔄 Refresh
           </button>
         </div>
 
         {loading ? (
-          <p>Loading students...</p>
+          <div className="loading">Loading students...</div>
         ) : students.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+          <div className="empty-state">
             <p>No students found.</p>
             {userRole === 'admin' && <p>Use the form above to add the first student.</p>}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ minWidth: '800px' }}>
+          <div className="table-container">
+            <table>
               <thead>
                 <tr>
                   <th>Admission No</th>
@@ -256,18 +256,20 @@ export default function Students({ userRole }) {
                     <td>{s.phone || 'N/A'}</td>
                     {userRole === 'admin' && (
                       <td>
-                        <button 
-                          onClick={() => startEdit(s)} 
-                          style={{ background: '#f59e0b', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', marginRight: '8px', fontSize: '12px' }}
-                        >
-                          ✏️ Edit
-                        </button>
-                        <button 
-                          onClick={() => deleteStudent(s.id)} 
-                          style={{ background: '#ef4444', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-                        >
-                          🗑️ Delete
-                        </button>
+                        <div className="button-group">
+                          <button 
+                            onClick={() => startEdit(s)} 
+                            className="btn-small btn-edit"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button 
+                            onClick={() => deleteStudent(s.id)} 
+                            className="btn-small btn-delete"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -280,21 +282,10 @@ export default function Students({ userRole }) {
 
       {/* EDIT STUDENT MODAL */}
       {editingId && (
-        <div style={{ 
-          position: 'fixed', 
-          top: '0', 
-          left: '0', 
-          right: '0', 
-          bottom: '0', 
-          background: 'rgba(0,0,0,0.5)', 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          zIndex: 1000 
-        }}>
-          <div style={{ background: 'white', padding: '30px', borderRadius: '12px', maxWidth: '500px', width: '90%', maxHeight: '90vh', overflow: 'auto' }}>
-            <h3 style={{ marginBottom: '20px', color: '#1e40af' }}>Edit Student</h3>
-            <form onSubmit={saveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Edit Student</h3>
+            <form onSubmit={saveEdit}>
               <input 
                 placeholder="Admission No" 
                 required 
@@ -336,14 +327,14 @@ export default function Students({ userRole }) {
                 value={editForm.year || 1} 
                 onChange={e => setEditForm({ ...editForm, year: Number(e.target.value) })} 
               />
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button type="submit" style={{ background: '#16a34a', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+              <div className="button-group">
+                <button type="submit" className="btn-success">
                   💾 Save Changes
                 </button>
                 <button 
                   type="button" 
                   onClick={cancelEdit} 
-                  style={{ background: '#6b7280', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                  className="btn-secondary"
                 >
                   ❌ Cancel
                 </button>

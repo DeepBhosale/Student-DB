@@ -138,14 +138,13 @@ export default function Attendance({ userRole }) {
 
       {/* ADD ATTENDANCE FORM - For Faculty and Admin */}
       {(userRole === 'faculty' || userRole === 'admin') && (
-        <div style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '2px solid #e2e8f0' }}>
-          <h4 style={{ marginBottom: '20px', color: '#1e40af' }}>➕ Mark Attendance</h4>
-          <form onSubmit={saveAttendance} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="form-section">
+          <h4>➕ Mark Attendance</h4>
+          <form onSubmit={saveAttendance}>
             <select 
               value={form.student_id} 
               onChange={e => setForm({ ...form, student_id: e.target.value })}
               required
-              style={{ padding: '8px' }}
             >
               <option value="">-- Select Student --</option>
               {students.map(s => (
@@ -159,7 +158,6 @@ export default function Attendance({ userRole }) {
               value={form.subject_id} 
               onChange={e => setForm({ ...form, subject_id: e.target.value })}
               required
-              style={{ padding: '8px' }}
             >
               <option value="">-- Select Subject --</option>
               {subjects.map(s => (
@@ -174,21 +172,33 @@ export default function Attendance({ userRole }) {
               value={form.date} 
               onChange={e => setForm({ ...form, date: e.target.value })} 
               required
-              style={{ padding: '8px' }}
             />
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              padding: '12px', 
+              background: 'white', 
+              borderRadius: '6px', 
+              border: '1px solid #cbd5e1',
+              cursor: 'pointer'
+            }}>
               <input 
                 type="checkbox" 
                 checked={form.present} 
                 onChange={e => setForm({ ...form, present: e.target.checked })} 
               />
-              <span style={{ fontWeight: form.present ? 'bold' : 'normal', color: form.present ? '#16a34a' : '#ef4444' }}>
+              <span style={{ 
+                fontWeight: form.present ? 'bold' : 'normal', 
+                color: form.present ? '#16a34a' : '#ef4444',
+                fontSize: '16px'
+              }}>
                 {form.present ? '✅ Present' : '❌ Absent'}
               </span>
             </label>
 
-            <button type="submit" style={{ background: '#16a34a', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button type="submit" className="btn-success">
               Save Attendance
             </button>
           </form>
@@ -196,31 +206,31 @@ export default function Attendance({ userRole }) {
       )}
 
       {/* ATTENDANCE RECORDS LIST */}
-      <div style={{ background: 'white', padding: '20px', borderRadius: '12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="dashboard-section">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
           <h3>Attendance Records ({records.length})</h3>
-          <button onClick={fetchRecords} style={{ background: '#2563eb', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>
+          <button onClick={fetchRecords} className="btn-primary">
             🔄 Refresh
           </button>
         </div>
 
         {loading ? (
-          <p>Loading attendance...</p>
+          <div className="loading">Loading attendance...</div>
         ) : records.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+          <div className="empty-state">
             <p>No attendance records found.</p>
             {(userRole === 'faculty' || userRole === 'admin') && <p>Use the form above to mark the first attendance.</p>}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ minWidth: '900px' }}>
+          <div className="table-container">
+            <table>
               <thead>
                 <tr>
                   <th>Date</th>
                   <th>Student</th>
                   <th>Subject</th>
                   <th>Status</th>
-                  <th>Recorded On</th>
+                  <th>Recorded</th>
                   {(userRole === 'faculty' || userRole === 'admin') && <th>Actions</th>}
                 </tr>
               </thead>
@@ -231,42 +241,25 @@ export default function Attendance({ userRole }) {
                     <td>{studentLabel(r.student_id)}</td>
                     <td>{subjectLabel(r.subject_id)}</td>
                     <td>
-                      <span 
-                        style={{ 
-                          padding: '4px 8px', 
-                          borderRadius: '6px', 
-                          fontSize: '12px', 
-                          fontWeight: 'bold',
-                          background: r.present ? '#dcfce7' : '#fee2e2',
-                          color: r.present ? '#166534' : '#991b1b'
-                        }}
-                      >
+                      <span className={`status-badge ${r.present ? 'status-present' : 'status-absent'}`}>
                         {r.present ? '✅ Present' : '❌ Absent'}
                       </span>
                     </td>
                     <td>{r.created_at ? new Date(r.created_at).toLocaleDateString() : 'N/A'}</td>
                     {(userRole === 'faculty' || userRole === 'admin') && (
                       <td>
-                        <div style={{ display: 'flex', gap: '5px' }}>
+                        <div className="button-group">
                           <button 
                             onClick={() => toggleAttendance(r)}
-                            style={{ 
-                              background: r.present ? '#f59e0b' : '#16a34a', 
-                              color: 'white', 
-                              border: 'none', 
-                              padding: '2px 6px', 
-                              borderRadius: '4px', 
-                              cursor: 'pointer', 
-                              fontSize: '11px' 
-                            }}
+                            className={`btn-small ${r.present ? 'btn-warning' : 'btn-success'}`}
                           >
-                            {r.present ? '❌ Mark Absent' : '✅ Mark Present'}
+                            {r.present ? '❌' : '✅'}
                           </button>
                           <button 
                             onClick={() => deleteRecord(r.id)} 
-                            style={{ background: '#ef4444', color: 'white', border: 'none', padding: '2px 6px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                            className="btn-small btn-delete"
                           >
-                            🗑️ Delete
+                            🗑️
                           </button>
                         </div>
                       </td>
@@ -281,26 +274,26 @@ export default function Attendance({ userRole }) {
 
       {/* ATTENDANCE SUMMARY - Show some stats */}
       {records.length > 0 && (
-        <div style={{ marginTop: '20px', padding: '15px', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <h4 style={{ marginBottom: '10px', color: '#1e40af' }}>📊 Quick Stats</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' }}>
-            <div style={{ textAlign: 'center', padding: '10px', background: '#dcfce7', borderRadius: '8px' }}>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#166534' }}>
+        <div className="dashboard-section" style={{ marginTop: '20px' }}>
+          <h4 style={{ marginBottom: '15px', color: '#1e40af' }}>📊 Quick Stats</h4>
+          <div className="stats-grid">
+            <div className="stat-card" style={{ background: '#dcfce7' }}>
+              <div className="stat-value" style={{ color: '#166534' }}>
                 {records.filter(r => r.present).length}
               </div>
-              <div style={{ fontSize: '12px', color: '#166534' }}>Total Present</div>
+              <div className="stat-label" style={{ color: '#166534' }}>Total Present</div>
             </div>
-            <div style={{ textAlign: 'center', padding: '10px', background: '#fee2e2', borderRadius: '8px' }}>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#991b1b' }}>
+            <div className="stat-card" style={{ background: '#fee2e2' }}>
+              <div className="stat-value" style={{ color: '#991b1b' }}>
                 {records.filter(r => !r.present).length}
               </div>
-              <div style={{ fontSize: '12px', color: '#991b1b' }}>Total Absent</div>
+              <div className="stat-label" style={{ color: '#991b1b' }}>Total Absent</div>
             </div>
-            <div style={{ textAlign: 'center', padding: '10px', background: '#dbeafe', borderRadius: '8px' }}>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1e40af' }}>
+            <div className="stat-card" style={{ background: '#dbeafe' }}>
+              <div className="stat-value" style={{ color: '#1e40af' }}>
                 {Math.round((records.filter(r => r.present).length / records.length) * 100)}%
               </div>
-              <div style={{ fontSize: '12px', color: '#1e40af' }}>Overall Attendance</div>
+              <div className="stat-label" style={{ color: '#1e40af' }}>Overall Attendance</div>
             </div>
           </div>
         </div>
