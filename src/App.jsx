@@ -210,7 +210,7 @@ function App() {
   if (!session) {
     return (
       <div className="auth-container">
-        <h2>VIT College Student DBMS</h2>
+        <h2>VIT Student Portal</h2>
         <form onSubmit={handleAuth} className="auth-form">
           <input
             type="email"
@@ -290,7 +290,7 @@ function App() {
     <div className="app-container">
       {/* Header */}
       <header>
-        <h1>VIT College Student DBMS</h1>
+        <h1>VIT Student Portal</h1>
         <div>
           <span className="role-badge" style={{ background: welcomeInfo.color }}>
             {userRole?.toUpperCase()}
